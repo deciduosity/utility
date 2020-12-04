@@ -5,8 +5,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/deciduosity/grip"
-	"github.com/deciduosity/grip/message"
 	"github.com/pkg/errors"
 	ignore "github.com/sabhiram/go-git-ignore"
 )
@@ -31,16 +29,7 @@ func WriteRawFile(path string, data []byte) error {
 		return errors.Wrapf(err, "problem creating file '%s'", path)
 	}
 
-	n, err := file.Write(data)
-	if err != nil {
-		grip.Warning(message.WrapError(errors.WithStack(file.Close()),
-			message.Fields{
-				"message":       "problem closing file after error",
-				"path":          path,
-				"bytes_written": n,
-				"input_len":     len(data),
-			}))
-
+	if _, err := file.Write(data); err != nil {
 		return errors.Wrapf(err, "problem writing data to file '%s'", path)
 	}
 
